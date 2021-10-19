@@ -44,9 +44,11 @@ class class_hls_player(TaskSet):
 
             variant = self.select_bitrate(parsed_master_m3u8)
 
-            variant_url = "{base_url}/{variant}".format(base_url=base_url, variant=variant.uri)
+            base_variant = base_url[0:len(base_url)-14]
+            variant_url = "{base_variant}/{variant}".format(base_variant=base_variant, variant=variant.uri)
+            
             variant_m3u8 = self.client.get(variant_url, name="merged")
-            parsed_variant_m3u8 = m3u8.M3U8(content=variant_m3u8.text, base_uri=base_url)
+            parsed_variant_m3u8 = m3u8.M3U8(content=variant_m3u8.text, base_uri=base_variant)
 
             # get all the segments
             for segment in parsed_variant_m3u8.segments:
