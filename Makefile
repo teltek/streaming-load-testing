@@ -67,7 +67,7 @@ test: env
 .PHONY: build
 
 build:
-	time docker build -t unifiedstreaming/load-generator:$(TAG) .
+	time docker build -t teltek/streaming-load-testing:$(TAG) .
 
 
 .PHONY: docker-stop
@@ -103,7 +103,7 @@ else
 		-p 8089:8089 \
 		-v ${PWD}/test-results/:/test-results/ \
 		unified-streaming/streaming-load-testing  \
-    	-f /load_generator/locustfiles/vod_dash_hls_sequence.py \
+		-f /load_generator/locustfiles/vod_dash_hls_sequence.py \
 		--no-web -c 1 -r 1 --run-time 10s --only-summary \
 		--csv=../test-results/ouput_example 
 endif
