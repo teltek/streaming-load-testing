@@ -16,5 +16,5 @@ services:
       - LOCUST_SPAWN_RATE=1
       - LOCUST_RUN_TIME=3600s
       - LOCUST_ONLY_SUMMARY=true
-      - buffer_size=8
+      - buffer_size=2
     command: '--no-web'

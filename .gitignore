@@ -1,3 +1,4 @@
 env
 streamin_load_testing.egg-info
 *~
+*.pyc

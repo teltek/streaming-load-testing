@@ -13,6 +13,8 @@ PLAY_MODE = os.getenv("play_mode")
 BUFFER_SIZE = os.getenv("buffer_size")
 BUFFER_SIZE = int(BUFFER_SIZE)  # Cast os.environ str to int
 BITRATE = os.getenv("bitrate")
+LOCUST_RUN_TIME = os.getenv("LOCUST_RUN_TIME")
+TOTAL_TIME = int(LOCUST_RUN_TIME[:-1])
 
 
 LOGGER_SEGMENTS = True
@@ -38,25 +40,28 @@ class class_hls_player(TaskSet):
             m3u8.M3U8(content=master_m3u8.text, base_uri=base_url)
 
         elif PLAY_MODE == "full_playback":
-            # Retrieve segments with an specific buffer size
-            master_m3u8 = self.client.get(master_url, name="merged")
-            parsed_master_m3u8 = m3u8.M3U8(content=master_m3u8.text, base_uri=base_url)
+            execution_time = 0
+            while execution_time<TOTAL_TIME:
+                # Retrieve segments with an specific buffer size
+                master_m3u8 = self.client.get(master_url, name="merged")
+                parsed_master_m3u8 = m3u8.M3U8(content=master_m3u8.text, base_uri=base_url)
 
-            variant = self.select_bitrate(parsed_master_m3u8)
+                variant = self.select_bitrate(parsed_master_m3u8)
 
-            base_variant = base_url[0:len(base_url)-14]
-            variant_url = "{base_variant}/{variant}".format(base_variant=base_variant, variant=variant.uri)
+                base_variant = base_url[0:len(base_url)-14]
+                variant_url = "{base_variant}/{variant}".format(base_variant=base_variant, variant=variant.uri)
             
-            variant_m3u8 = self.client.get(variant_url, name="merged")
-            parsed_variant_m3u8 = m3u8.M3U8(content=variant_m3u8.text, base_uri=base_variant)
+                variant_m3u8 = self.client.get(variant_url, name="merged")
+                parsed_variant_m3u8 = m3u8.M3U8(content=variant_m3u8.text, base_uri=base_variant)
 
-            # get all the segments
-            for segment in parsed_variant_m3u8.segments:
-                if LOGGER_SEGMENTS:
-                    print(segment.absolute_uri)
-                self.client.get(segment.absolute_uri, name="merged")
-                if BUFFER_SIZE != 0:
-                    self._sleep(BUFFER_SIZE)
+                # get all the segments
+                for segment in parsed_variant_m3u8.segments:
+                    if LOGGER_SEGMENTS:
+                        print(segment.absolute_uri)
+                    self.client.get(segment.absolute_uri, name="merged")
+                    if BUFFER_SIZE != 0:
+                        execution_time += BUFFER_SIZE
+                        self._sleep(BUFFER_SIZE)
         else:
             # Select random segments
             master_m3u8 = self.client.get(master_url, name="merged")
