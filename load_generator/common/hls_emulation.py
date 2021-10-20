@@ -56,13 +56,13 @@ class class_hls_player(TaskSet):
                 # get all the segments
                 for segment in parsed_variant_m3u8.segments:
                     import time
-                    start = time.process_time()
+                    start = time.time()
                     if LOGGER_SEGMENTS:
                         print(segment.absolute_uri)
                     self.client.get(segment.absolute_uri, name="merged")
                     if BUFFER_SIZE != 0:
                         execution_time += BUFFER_SIZE
-                        self._sleep(BUFFER_SIZE-(time.process_time() - start))
+                        self._sleep(BUFFER_SIZE-(time.time() - start))
         else:
             # Select random segments
             master_m3u8 = self.client.get(master_url, name="merged")
