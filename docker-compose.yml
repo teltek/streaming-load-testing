@@ -5,16 +5,16 @@ services:
     image: teltek/streaming-load-testing:latest
     restart: unless-stopped
     environment:
-      - HOST_URL=https://example.com
-      - MANIFEST_FILE=live/stream/playlist.m3u8
+      - HOST_URL=https://streaming.campusdomar.es
+      - MANIFEST_FILE=live/test/playlist.m3u8
       - mode=live
       - play_mode=full_playback
       - bitrate=highest_bitrate
       - LOCUST_LOCUSTFILE=/load_generator/locustfiles/vod_dash_hls_sequence.py
       - LOCUST_HEADLESS=true
-      - LOCUST_USERS=10
+      - LOCUST_USERS=1
       - LOCUST_SPAWN_RATE=1
-      - LOCUST_RUN_TIME=120s
+      - LOCUST_RUN_TIME=3600s
       - LOCUST_ONLY_SUMMARY=true
       - buffer_size=8
     command: '--no-web'
